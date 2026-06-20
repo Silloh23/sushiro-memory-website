@@ -1,10 +1,21 @@
 import { MemoryItem } from '../types';
 
+/**
+ * 💡 CUSTOM GRAPHICS GUIDE:
+ * -------------------------
+ * To replace emojis completely with your own personal drawings or photos:
+ * 1. Put your image files in the "public" folder of your project (e.g. `/public/photos/met.jpg`)
+ *    or compile them directly. 
+ * 2. Set the `imageUrl` field below to be the absolute web path from the root (e.g., `"/photos/met.jpg"`).
+ * 3. You can also paste high-resolution direct web links (e.g. from Discord, Imgur, or cloud storage).
+ * 4. Keep the `emoji` field as a beautiful mini textual decoration or fallback!
+ */
 export const DEFAULT_MEMORIES: MemoryItem[] = [
   {
     id: 1,
     category: "memories",
     emoji: "🌸",
+    imageUrl: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&q=80&w=600",
     title: "The day we met",
     price: "¥108",
     plateColor: "#F7C5C5",
@@ -15,6 +26,7 @@ export const DEFAULT_MEMORIES: MemoryItem[] = [
     id: 2,
     category: "memories",
     emoji: "🍣",
+    imageUrl: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&q=80&w=600",
     title: "First Sushiro date",
     price: "¥108",
     plateColor: "#FFFFFF",
@@ -35,6 +47,7 @@ export const DEFAULT_MEMORIES: MemoryItem[] = [
     id: 4,
     category: "tim",
     emoji: "🐻",
+    imageUrl: "https://images.unsplash.com/photo-1559251606-c623743a6d76?auto=format&fit=crop&q=80&w=600",
     title: "Tim-yaki bear",
     price: "¥168",
     plateColor: "#D4B896",
@@ -55,6 +68,7 @@ export const DEFAULT_MEMORIES: MemoryItem[] = [
     id: 6,
     category: "disney",
     emoji: "✨",
+    imageUrl: "https://images.unsplash.com/photo-1501183007986-d0d080b147f9?auto=format&fit=crop&q=80&w=600",
     title: "Our Disney dream",
     price: "¥198",
     plateColor: "#EDE9FE",

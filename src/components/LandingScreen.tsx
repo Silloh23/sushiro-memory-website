@@ -68,7 +68,7 @@ export default function LandingScreen({ onEnter }: LandingScreenProps) {
           
           <div className="w-32 h-[2px] bg-[#D0021B] mx-auto my-4 opacity-70"></div>
           <p className="text-gray-600 text-sm tracking-wide font-sans leading-relaxed">
-            A special dining table cooked with 6 months of love, laughter, and fairy tales.
+            Your personal sushi restaurant filled with our special memories
           </p>
         </div>
 

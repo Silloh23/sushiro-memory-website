@@ -245,7 +245,16 @@ export default function App() {
                 {/* Card Header information */}
                 <div>
                   <div className="flex justify-between items-start mb-1">
-                    <span className="text-2xl select-none leading-none">{item.emoji}</span>
+                    {item.imageUrl ? (
+                      <img 
+                        src={item.imageUrl} 
+                        alt="" 
+                        className="w-9 h-9 rounded-full object-cover border border-white/20 select-none shadow-xs"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <span className="text-2xl select-none leading-none">{item.emoji}</span>
+                    )}
                     <span className="text-[#D0021B] font-mono text-xs font-bold">{item.price}</span>
                   </div>
                   <h3 className="text-white font-bold text-xs md:text-sm tracking-wide leading-tight truncate select-all mt-1">

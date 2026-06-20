@@ -135,6 +135,64 @@ export default function SushiroScene({ onBelt, onPlateConsumed, isTouchDevice }:
     return texture;
   }
 
+  // Create highly-polished circular Polaroid/souvenir-pin tokens for custom photos/drawings
+  function createCustomImageTexture(imageUrl: string, onReady: (texture: THREE.Texture) => void) {
+    const loader = new THREE.TextureLoader();
+    loader.setCrossOrigin('anonymous');
+    loader.load(
+      imageUrl,
+      (imgTexture) => {
+        const img = imgTexture.image;
+        if (!img) return;
+        const canvas = document.createElement('canvas');
+        canvas.width = 128;
+        canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.clearRect(0, 0, 128, 128);
+
+          // 1. White glossy pin backing disc
+          ctx.fillStyle = '#FFFFFF';
+          ctx.beginPath();
+          ctx.arc(64, 64, 56, 0, Math.PI * 2);
+          ctx.fill();
+
+          // 2. Elegant warm gold/rose-gold accent border
+          ctx.strokeStyle = '#FDC3C3';
+          ctx.lineWidth = 4;
+          ctx.stroke();
+
+          // 3. Perfect circular clip mask for user photo
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(64, 64, 51, 0, Math.PI * 2);
+          ctx.clip();
+
+          // 4. Calculate cover aspect ratio
+          const scale = Math.max(102 / img.width, 102 / img.height);
+          const drawW = img.width * scale;
+          const drawH = img.height * scale;
+          const drawX = 64 - drawW / 2;
+          const drawY = 64 - drawH / 2;
+          ctx.drawImage(img, drawX, drawY, drawW, drawH);
+          ctx.restore();
+
+          // 5. Whimsical sparkling overlay in corner
+          ctx.font = '22px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('✨', 94, 94);
+        }
+        const canvasTexture = new THREE.CanvasTexture(canvas);
+        onReady(canvasTexture);
+      },
+      undefined,
+      (err) => {
+        console.error("Failed loading image, falling back:", err);
+      }
+    );
+  }
+
   // Generate a beautiful, low-poly procedural sushi plate in 3D
   function create3DPlate(item: MemoryItem): THREE.Group {
     const group = new THREE.Group();
@@ -192,15 +250,22 @@ export default function SushiroScene({ onBelt, onPlateConsumed, isTouchDevice }:
     noriMesh.position.set(0, 0.22, 0.02);
     group.add(noriMesh);
 
-    // 4. Floating Emoji Sprite above the plate
-    const emojiTexture = createEmojiTexture(item.emoji);
-    const spriteMat = new THREE.SpriteMaterial({ map: emojiTexture, transparent: true });
+    // 4. Floating Photo/Emoji Sprite above the plate
+    const initialTexture = createEmojiTexture(item.emoji);
+    const spriteMat = new THREE.SpriteMaterial({ map: initialTexture, transparent: true });
     const sprite = new THREE.Sprite(spriteMat);
     sprite.position.set(0, 1.0, 0);
-    // Dynamic rounded scale so it is easily clickable and cute
     sprite.scale.set(0.9, 0.9, 1.0);
     sprite.name = `emoji_sprite_${item.id}`;
     group.add(sprite);
+
+    // If a drawing or personal photo exists, swap the texture asynchronously!
+    if (item.imageUrl) {
+      createCustomImageTexture(item.imageUrl, (texture) => {
+        sprite.material.map = texture;
+        sprite.material.needsUpdate = true;
+      });
+    }
 
     // Add pointer to group for raycasting
     group.userData = { id: item.id };

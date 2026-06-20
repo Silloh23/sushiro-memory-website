@@ -31,16 +31,42 @@ export default function MemoryRevealCard({ item, onClose }: MemoryRevealCardProp
                 <span>TABLE 1-A (LOVE)</span>
               </div>
 
-              {/* Huge floaty emoji on top */}
-              <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-md text-4xl border-2 border-amber-900 absolute -top-10 left-1/2 transform -translate-x-1/2 select-none">
-                {item.emoji}
-              </div>
+              {/* Floating icon badge or physical Polaroid illustration */}
+              {item.imageUrl ? (
+                <div className="relative mb-5 transform hover:rotate-1 duration-300 select-none">
+                  {/* Cute pin head clip */}
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 bg-red-500 rounded-full shadow-md z-10 border border-white" />
+                  
+                  {/* Mini-polaroid frame */}
+                  <div className="w-52 bg-[#FCFAF2] p-3 pb-5 rounded-xs shadow-xl border border-gray-200 flex flex-col items-center">
+                    <div className="w-full aspect-square bg-[#eae8e0] overflow-hidden rounded-xs border border-gray-300">
+                      <img 
+                        src={item.imageUrl} 
+                        alt={item.title} 
+                        className="w-full h-full object-cover"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                    {/* Tiny handwritten souvenir tag */}
+                    <div className="mt-2 text-center text-xs font-serif font-bold tracking-wide text-amber-950 mt-2.5 opacity-90">
+                      ✨ {item.title} ({item.emoji})
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {/* Huge floaty emoji on top */}
+                  <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-md text-4xl border-2 border-amber-900 absolute -top-10 left-1/2 transform -translate-x-1/2 select-none">
+                    {item.emoji}
+                  </div>
 
-              {/* Placeholder pad to keep geometry clean */}
-              <div className="h-10 w-full" />
+                  {/* Placeholder pad to keep geometry clean */}
+                  <div className="h-10 w-full" />
+                </>
+              )}
 
               {/* Title & Japanese calligraphy title */}
-              <h3 className="font-serif italic text-2xl md:text-3xl text-[#2C2C2C] mt-2 text-center select-all font-bold">
+              <h3 className="font-serif italic text-2xl md:text-3xl text-[#2C2C2C] mt-1 text-center select-all font-bold">
                 {item.title}
               </h3>
               
