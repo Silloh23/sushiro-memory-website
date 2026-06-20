@@ -123,7 +123,7 @@ export default function LandingScreen({ onEnter }: LandingScreenProps) {
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="My Love / 彼女の名前"
+            placeholder="My Love "
             maxLength={20}
             className="w-full text-center px-4 py-3 bg-amber-50/40 rounded-lg border-2 border-[#FFE8A3] focus:outline-none focus:border-[#D0021B] font-sans antialiased placeholder-gray-400 font-medium transition-colors text-gray-800"
           />

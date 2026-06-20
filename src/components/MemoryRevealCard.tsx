@@ -27,7 +27,7 @@ export default function MemoryRevealCard({ item, onClose }: MemoryRevealCardProp
               
               {/* Authentically styled Japanese slip header */}
               <div className="w-full flex justify-between border-b-2 border-dashed border-gray-400 pb-3 mb-6 font-mono text-xs text-gray-700 select-none">
-                <span>SLIP No. 06-020</span>
+                <span>SLIP No. 06-023</span>
                 <span>TABLE 1-A (LOVE)</span>
               </div>
 
@@ -94,7 +94,7 @@ export default function MemoryRevealCard({ item, onClose }: MemoryRevealCardProp
                 onClick={onClose}
                 className="w-full bg-[#D0021B] hover:bg-[#b00216] text-white py-3 px-6 rounded-xl font-display font-bold uppercase tracking-widest text-sm shadow-md active:scale-95 duration-100 cursor-pointer text-center"
               >
-                💕 Noted
+                Noted
               </button>
             </div>
           </motion.div>

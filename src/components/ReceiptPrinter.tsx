@@ -19,7 +19,7 @@ export default function ReceiptPrinter({ memories, princessName }: ReceiptPrinte
     "     OMOIDE SUSHI     ",
     "    思い出寿司 (愛)    ",
     "━━━━━━━━━━━━━━━━━━━━━",
-    `Reg No: ${new Date().getFullYear()}-0620`,
+    `Reg No: ${new Date().getFullYear()}-0623`,
     `Date: ${new Date().toLocaleDateString()}`,
     `Cashier: Chief Teddy Tim`,
     `Customer: ${princessName}`,
@@ -28,8 +28,8 @@ export default function ReceiptPrinter({ memories, princessName }: ReceiptPrinte
   ];
 
   const itemsLines = memories.map((m, idx) => {
-    // Left pads standard receipt listing length
-    const rankStr = `${idx + 1}. ${m.emoji} ${m.title}`;
+    // Left pads standard receipt listing length without emoji in title
+    const rankStr = `${idx + 1}. ${m.title}`;
     const priceStr = `${m.price}`;
     const dotsCount = Math.max(2, 21 - rankStr.length - priceStr.length);
     const pads = ".".repeat(dotsCount);
@@ -56,7 +56,7 @@ export default function ReceiptPrinter({ memories, princessName }: ReceiptPrinte
     "I love you. ♡        ",
     "━━━━━━━━━━━━━━━━━━━━━",
     "     ありがとう     ",
-    " 2026.06.23 - FOREVER ",
+    " 2026.06.20 - FOREVER ",
     "━━━━━━━━━━━━━━━━━━━━━"
   ];
 
@@ -202,13 +202,13 @@ export default function ReceiptPrinter({ memories, princessName }: ReceiptPrinte
                 onClick={handleScreenshotClick}
                 className="bg-[#D0021B] hover:bg-[#b00216] transition-colors text-white py-3 px-8 rounded-full font-display font-bold text-sm tracking-widest shadow-lg flex items-center gap-2 cursor-pointer"
               >
-                <span>📸</span> Save as memory
+                <span></span> Save as memory
               </button>
 
               {/* Toast/Tooltip info overlay */}
               {showTooltip && (
                 <div className="absolute -top-16 bg-gray-900 border border-white/20 text-white text-xs py-2 px-4 rounded-lg shadow-xl text-center z-10 font-sans tracking-wide">
-                  Take a screenshot to keep this receipt, or print to PDF! 💖
+                  Take a screenshot to keep this receipt
                 </div>
               )}
             </motion.div>

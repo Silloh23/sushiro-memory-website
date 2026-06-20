@@ -135,8 +135,8 @@ export default function App() {
         <div className="absolute top-0 left-0 w-full p-6 md:p-8 flex flex-col md:flex-row justify-between items-start z-20 pointer-events-none select-none">
           <div className="flex flex-col">
             <div className="flex items-center gap-2 mb-1.5 pointer-events-auto">
-              <span className="bg-[#D0021B] text-white px-3 py-0.5 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-widest shadow-xs">Est. 2023</span>
-              <span className="text-2xl animate-bounce">🐻</span>
+              <span className="bg-[#D0021B] text-white px-3 py-0.5 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-widest shadow-xs">Est. 2026</span>
+              <span className="text-2xl animate-bounce"></span>
             </div>
             <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-[#1a1a1a] drop-shadow-xs pointer-events-auto">
               Omoide Sushi <span className="font-serif italic font-normal text-2xl md:text-3xl ml-1 text-[#D0021B]">思い出寿司</span>
@@ -147,19 +147,19 @@ export default function App() {
           <div className="mt-4 md:mt-0 bg-white/80 border border-[#F7C5C5] px-5 py-2.5 rounded-2xl shadow-sm flex items-center gap-4 backdrop-blur-md pointer-events-auto shadow-md">
             <div className="text-right">
               <p className="text-[10px] uppercase tracking-tighter opacity-50 font-bold text-[#2C2C2C]">Memories Consumed</p>
-              <p className="text-lg font-bold text-[#1a1a1a]">{consumed.length} / {DEFAULT_MEMORIES.length} <span className="text-[#D0021B]">♥</span></p>
+              <p className="text-lg font-bold text-[#1a1a1a]">{consumed.length} / {DEFAULT_MEMORIES.length}</p>
             </div>
-            <div className="w-10 h-10 rounded-full bg-[#F7C5C5] flex items-center justify-center text-xl select-none shadow-xs">✨</div>
+            <div className="w-10 h-10 rounded-full bg-[#F7C5C5] flex items-center justify-center text-xl select-none shadow-xs"><span className="text-[#D0021B]">♥</span></div>
           </div>
         </div>
 
         {/* Interactive hints block */}
         <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 z-10 bg-[#D0021B]/95 text-white font-sans text-xs font-semibold px-4 py-1.5 rounded-full shadow-lg tracking-wider animate-bounce select-none pointer-events-none">
           {consumed.length === DEFAULT_MEMORIES.length 
-            ? "✦ Anniversary Table Cleared! 🌟 ✦" 
+            ? "✦ Anniversary Table Cleared! ✦" 
             : onBelt.length === 0 
-              ? "👈 Order a custom roll from the touchscreen below!" 
-              : "🍣 Tap moving plates to eat & unlock love notes!"
+              ? "Order a custom roll from the touchscreen below!" 
+              : "Tap moving plates to eat & unlock love notes!"
           }
         </div>
       </div>
@@ -192,9 +192,9 @@ export default function App() {
             const tabName = cat === 'memories' ? 'Memories' :
                             cat === 'tim' ? 'Tim Specials' :
                             cat === 'disney' ? 'Disney Magic' : 'Secret Menu';
-            const tabEmoji = cat === 'memories' ? '🌸' :
-                             cat === 'tim' ? '🐻' :
-                             cat === 'disney' ? '✨' : '💌';
+            const tabEmoji = cat === 'memories' ? '' :
+                             cat === 'tim' ? '' :
+                             cat === 'disney' ? '' : '';
 
             const isActive = activeTab === cat;
 
@@ -210,7 +210,7 @@ export default function App() {
               >
                 <span className="text-sm">{tabEmoji}</span>
                 <span>{tabName}</span>
-                {isLocked && <span className="text-[10px] leading-none opacity-80 select-none">🔒</span>}
+                {isLocked && <span className="text-[10px] leading-none opacity-80 select-none"></span>}
               </button>
             );
           })}
@@ -270,7 +270,7 @@ export default function App() {
                     </button>
                   ) : isWaiting ? (
                     <button className="w-full py-2 bg-[#D0021B] text-white text-[10px] font-bold rounded-lg uppercase tracking-wide animate-pulse select-none">
-                      On its way! 🍣
+                      On its way!
                     </button>
                   ) : (
                     <button
@@ -297,10 +297,10 @@ export default function App() {
             exit={{ opacity: 0, scale: 0.9 }}
             className="fixed top-24 left-1/2 transform -translate-x-1/2 z-40 bg-gray-900 border-2 border-[#D0021B] py-3.5 px-6 rounded-xl shadow-2xl max-w-xs text-center select-none text-white backdrop-blur-md"
           >
-            <span className="text-xl">🔒</span>
+            <span className="text-xl"></span>
             <h5 className="font-display font-bold text-sm mt-1">Secret Menu is Brewing!</h5>
             <p className="font-sans text-xs text-gray-300 mt-1 leading-relaxed">
-              Feed Chef Tim all other {DEFAULT_MEMORIES.length - 1} magical memory plates to reveal the final secret dessert roll! 🐻✨
+              Feed Chef Tim all other {DEFAULT_MEMORIES.length - 1} magical memory plates to reveal the final secret dessert roll! 
             </p>
           </motion.div>
         )}
