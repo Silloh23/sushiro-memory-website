@@ -1,0 +1,6 @@
+{
+  "name": "Sushiro Memory Website",
+  "description": "An interactive 3D Sushiro-themed anniversary website celebrating memories with custom menu dishes, a scrolling conveyor belt, love notes, and a thermal receipt.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

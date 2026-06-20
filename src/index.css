@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Quicksand", "Noto Sans JP", sans-serif;
+  --font-mono: "Share Tech Mono", monospace;
+  --font-sans: "Noto Sans JP", "Quicksand", sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
+}
+
+@layer base {
+  body {
+    background-color: #FFF8F0;
+    font-family: var(--font-sans);
+    color: #2C2C2C;
+    overflow-x: hidden;
+  }
+}
+
+/* Custom Paper Texture styling */
+.paper-texture {
+  background-color: #fff;
+  background-image: 
+    repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(0, 0, 0, 0.03) 27px, rgba(0, 0, 0, 0.03) 28px),
+    repeating-linear-gradient(90deg, transparent, transparent 27px, rgba(0, 0, 0, 0.03) 27px, rgba(0, 0, 0, 0.03) 28px);
+  background-size: 28px 28px;
+  position: relative;
+}
+
+.paper-texture::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, transparent 70%, rgba(255, 248, 240, 0.15) 100%);
+  pointer-events: none;
+}
+
+/* Keyframe for floating animation */
+@keyframes gentofloat {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(1deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+.float-slow {
+  animation: gentofloat 4s ease-in-out infinite;
+}
+
+/* Scrollbar styling for digital menu scroll */
+.custom-scrollbar::-webkit-scrollbar {
+  height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #111;
+  border-radius: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #D0021B;
+  border-radius: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #ff2b43;
+}
+
