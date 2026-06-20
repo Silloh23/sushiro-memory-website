@@ -1,8 +1,23 @@
+# Dependencies
 node_modules/
-build/
+
+# Production Build Outputs
 dist/
-coverage/
+dist-ssr/
+build/
+
+# OS-Specific system files (Mac/Windows metadata)
 .DS_Store
+Thumbs.db
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 *.log
-.env*
-!.env.example
+
+# Vercel, IDE, and Editor Caches
+.vercel/
+.vscode/
+.idea/

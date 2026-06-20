@@ -234,6 +234,171 @@ export default function SushiroScene({ onBelt, onPlateConsumed, isTouchDevice }:
     return texture;
   }
 
+  // Build a custom 3D Chef Tim characters with a chef hat, sushi cutting board, knife & mini ingredients
+  function createChefTim() {
+    const chefGroup = new THREE.Group();
+
+    // Materials suited to beautiful bright diner lighting - sweeter honey bear tone
+    const bearBrown = new THREE.MeshStandardMaterial({ color: 0xB57A42, roughness: 0.5 }); 
+    const bearCream = new THREE.MeshStandardMaterial({ color: 0xFFEFD5, roughness: 0.5 }); 
+    const blackMat = new THREE.MeshBasicMaterial({ color: 0x111111 }); 
+    const whiteMat = new THREE.MeshStandardMaterial({ color: 0xFFFFFF, roughness: 0.4 }); 
+    const redMat = new THREE.MeshStandardMaterial({ color: 0xE81A24, roughness: 0.5 });   
+
+    // 1. Chef Coat / Body
+    const bodyGeo = new THREE.CylinderGeometry(0.5, 0.63, 1.2, 16);
+    const bodyMesh = new THREE.Mesh(bodyGeo, whiteMat);
+    bodyMesh.position.y = 0.6;
+    bodyMesh.castShadow = true;
+    bodyMesh.receiveShadow = true;
+    chefGroup.add(bodyMesh);
+
+    // Red neck accessory / bandana
+    const scarfGeo = new THREE.CylinderGeometry(0.54, 0.54, 0.12, 16);
+    const scarfMesh = new THREE.Mesh(scarfGeo, redMat);
+    scarfMesh.position.y = 1.15;
+    chefGroup.add(scarfMesh);
+
+    // Bear Head Group for breathing/tilting
+    const headGroup = new THREE.Group();
+    headGroup.position.set(0, 1.6, 0);
+
+    // Main head sphere
+    const headGeo = new THREE.SphereGeometry(0.55, 16, 16);
+    const headMesh = new THREE.Mesh(headGeo, bearBrown);
+    headMesh.castShadow = true;
+    headGroup.add(headMesh);
+
+    // Muzzle (cute bear nose base)
+    const muzzleGeo = new THREE.SphereGeometry(0.18, 12, 12);
+    const muzzleMesh = new THREE.Mesh(muzzleGeo, bearCream);
+    muzzleMesh.scale.set(1.2, 0.9, 0.8);
+    muzzleMesh.position.set(0, -0.05, 0.45);
+    headGroup.add(muzzleMesh);
+
+    // Tiny shiny black bear nose
+    const noseGeo = new THREE.SphereGeometry(0.06, 8, 8);
+    const noseMesh = new THREE.Mesh(noseGeo, blackMat);
+    noseMesh.position.set(0, 0.02, 0.55);
+    headGroup.add(noseMesh);
+
+    // Expressive little eyes
+    const eyeGeo = new THREE.SphereGeometry(0.05, 8, 8);
+    const leftEye = new THREE.Mesh(eyeGeo, blackMat);
+    leftEye.position.set(-0.16, 0.12, 0.46);
+    const rightEye = leftEye.clone();
+    rightEye.position.x = 0.16;
+    headGroup.add(leftEye);
+    headGroup.add(rightEye);
+
+    // Ears (Outer)
+    const earGeo = new THREE.SphereGeometry(0.18, 12, 12);
+    const leftEar = new THREE.Mesh(earGeo, bearBrown);
+    leftEar.position.set(-0.45, 0.4, 0.1);
+    headGroup.add(leftEar);
+
+    const rightEar = leftEar.clone();
+    rightEar.position.x = 0.45;
+    headGroup.add(rightEar);
+
+    // Ears (Inner Pink/Cream)
+    const innerEarGeo = new THREE.SphereGeometry(0.1, 12, 12);
+    const leftInnerEar = new THREE.Mesh(innerEarGeo, bearCream);
+    leftInnerEar.position.set(-0.43, 0.4, 0.15);
+    headGroup.add(leftInnerEar);
+
+    const rightInnerEar = leftInnerEar.clone();
+    rightInnerEar.position.x = 0.43;
+    headGroup.add(rightInnerEar);
+
+    // Japanese chef headband (Hachimaki)
+    const headbandGeo = new THREE.CylinderGeometry(0.57, 0.57, 0.1, 16);
+    const headbandMesh = new THREE.Mesh(headbandGeo, redMat);
+    headbandMesh.position.set(0, 0.22, 0);
+    headbandMesh.rotation.x = 0.06; 
+    headGroup.add(headbandMesh);
+
+    // Tall professional white toque (Chef Hat)
+    const hatGeo = new THREE.CylinderGeometry(0.38, 0.32, 0.65, 16);
+    const hatMesh = new THREE.Mesh(hatGeo, whiteMat);
+    hatMesh.position.set(0, 0.52, 0);
+    hatMesh.rotation.z = -0.1;
+    headGroup.add(hatMesh);
+
+    chefGroup.add(headGroup);
+
+    // Left Arm (Joint group)
+    const leftArmGroup = new THREE.Group();
+    leftArmGroup.position.set(-0.6, 0.9, 0.1);
+    const armGeo = new THREE.CylinderGeometry(0.14, 0.11, 0.45, 12);
+    const armMesh = new THREE.Mesh(armGeo, whiteMat); 
+    armMesh.position.y = -0.2;
+    armMesh.rotation.z = 0.3;
+    leftArmGroup.add(armMesh);
+    
+    const pawGeo = new THREE.SphereGeometry(0.13, 8, 8);
+    const pawMesh = new THREE.Mesh(pawGeo, bearBrown);
+    pawMesh.position.set(-0.06, -0.4, 0.05);
+    leftArmGroup.add(pawMesh);
+    chefGroup.add(leftArmGroup);
+
+    // Right Arm (Joint group)
+    const rightArmGroup = new THREE.Group();
+    rightArmGroup.position.set(0.6, 0.9, 0.1);
+    const armMeshRight = new THREE.Mesh(armGeo, whiteMat);
+    armMeshRight.position.y = -0.2;
+    armMeshRight.rotation.z = -0.3;
+    rightArmGroup.add(armMeshRight);
+
+    const pawMeshRight = new THREE.Mesh(pawGeo, bearBrown);
+    pawMeshRight.position.set(0.06, -0.4, 0.05);
+    rightArmGroup.add(pawMeshRight);
+    chefGroup.add(rightArmGroup);
+
+    // Chef cutting board counter
+    const boardGroup = new THREE.Group();
+    boardGroup.position.set(0, 0.35, 0.7); 
+
+    const boardWoodGeo = new THREE.BoxGeometry(1.4, 0.06, 0.75);
+    const boardWoodMat = new THREE.MeshStandardMaterial({ color: 0xE6C280, roughness: 0.8 }); 
+    const boardMesh = new THREE.Mesh(boardWoodGeo, boardWoodMat);
+    boardMesh.castShadow = true;
+    boardMesh.receiveShadow = true;
+    boardGroup.add(boardMesh);
+
+    // Procedural mini sushi on board
+    const miniRiceGeo = new THREE.BoxGeometry(0.14, 0.06, 0.09);
+    const miniRiceMat = new THREE.MeshLambertMaterial({ color: 0xfffcf7 });
+    const miniRice = new THREE.Mesh(miniRiceGeo, miniRiceMat);
+    miniRice.position.set(-0.25, 0.06, 0);
+    boardGroup.add(miniRice);
+
+    const miniFishGeo = new THREE.BoxGeometry(0.15, 0.03, 0.1);
+    const miniFishMat = new THREE.MeshLambertMaterial({ color: 0xD0021B });
+    const miniFish = new THREE.Mesh(miniFishGeo, miniFishMat);
+    miniFish.position.set(-0.25, 0.1, 0);
+    boardGroup.add(miniFish);
+
+    // Chef knife (Sanctuko knife)
+    const bladeGeo = new THREE.BoxGeometry(0.25, 0.05, 0.015);
+    const bladeMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 0.8, roughness: 0.1 });
+    const bladeMesh = new THREE.Mesh(bladeGeo, bladeMat);
+    bladeMesh.position.set(0.2, 0.06, 0.1);
+    bladeMesh.rotation.y = 0.2;
+    boardGroup.add(bladeMesh);
+
+    const handleGeo = new THREE.BoxGeometry(0.1, 0.03, 0.03);
+    const handleMat = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.9 });
+    const handleMesh = new THREE.Mesh(handleGeo, handleMat);
+    handleMesh.position.set(0.33, 0.06, 0.12);
+    handleMesh.rotation.y = 0.2;
+    boardGroup.add(handleMesh);
+
+    chefGroup.add(boardGroup);
+
+    return { group: chefGroup, leftArm: leftArmGroup, rightArm: rightArmGroup, head: headGroup };
+  }
+
   // Handle interaction with mouse/parallax tilt and camera/scrolling setup
   useEffect(() => {
     if (!containerRef.current) return;
@@ -247,8 +412,8 @@ export default function SushiroScene({ onBelt, onPlateConsumed, isTouchDevice }:
     const scene = new THREE.Scene();
     sceneRef.current = scene;
 
-    // FOG (gently soft-focuses the horizon of the conveyor track)
-    scene.fog = new THREE.FogExp2(0x1a0a00, 0.08);
+    // FOG (Fades into the page background's bright cream color instead of dark shadows)
+    scene.fog = new THREE.FogExp2(0xfffbf7, 0.02);
 
     // CAMERA
     const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 50);
@@ -266,21 +431,31 @@ export default function SushiroScene({ onBelt, onPlateConsumed, isTouchDevice }:
     rendererRef.current = renderer;
 
     // LIGHTING
-    // Ambient light - gives overall warmth and soft shadows
-    const ambientLight = new THREE.AmbientLight(0xfff5e6, 0.65);
+    // Brighter ambient light - gives overall vibrant fill and soft shadow baseline
+    const ambientLight = new THREE.AmbientLight(0xfffbf4, 1.25);
     scene.add(ambientLight);
 
-    // Directional warm diner spotlight centered above the belt
-    const spotLight = new THREE.SpotLight(0xffcc88, 1.5, 20, Math.PI / 4, 0.5, 1);
-    spotLight.position.set(0, 6, 2);
-    spotLight.castShadow = true;
-    spotLight.shadow.mapSize.width = 1024;
-    spotLight.shadow.mapSize.height = 1024;
+    // Directional bright key light pointing from upper-front to avoid face shadow
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.45);
+    keyLight.position.set(1.5, 5, 4);
+    keyLight.castShadow = true;
+    keyLight.shadow.mapSize.width = 1024;
+    keyLight.shadow.mapSize.height = 1024;
+    scene.add(keyLight);
+
+    // Dedicated warm spot light centered right on the sushi conveyor belt
+    const spotLight = new THREE.SpotLight(0xffebcf, 2.0, 20, Math.PI / 4, 0.5, 1);
+    spotLight.position.set(0, 6.5, 2);
     scene.add(spotLight);
 
-    // Point Light for glistening reflection triggers
-    const rimLight = new THREE.PointLight(0xffedd5, 1.2, 15);
-    rimLight.position.set(0, 4, -2);
+    // Dedicated bright spot light right in front of Chef Tim to make him look lively
+    const timSpotLight = new THREE.SpotLight(0xffffff, 2.8, 12, Math.PI / 4, 0.6, 1);
+    timSpotLight.position.set(0, 4.2, -0.2); // positioned above the belt pointing back towards Tim
+    scene.add(timSpotLight);
+
+    // Subtle rim light behind Tim and back counter for beautiful outlines
+    const rimLight = new THREE.PointLight(0xffecd6, 1.5, 15);
+    rimLight.position.set(0, 4, -2.5);
     scene.add(rimLight);
 
     // ENVIRONMENT DESIGN
@@ -318,6 +493,11 @@ export default function SushiroScene({ onBelt, onPlateConsumed, isTouchDevice }:
     const backTrim = frontTrim.clone();
     backTrim.position.z = -0.81;
     scene.add(backTrim);
+
+    // Instantiate adorable Chef Tim the Bear right behind the belt
+    const timObj = createChefTim();
+    timObj.group.position.set(0, 0.15, -1.35); // Centered, standing behind conveyor line
+    scene.add(timObj.group);
 
     // WHIMSICAL FLUTTERING SAKURA PETALS SYSTEM
     const sakuraCount = 35;
@@ -591,6 +771,20 @@ export default function SushiroScene({ onBelt, onPlateConsumed, isTouchDevice }:
         }
       }
 
+      // 6. Animate adorable Chef Tim
+      if (timObj) {
+        // Natural heavy breathing / bobbing
+        timObj.head.rotation.z = Math.sin(time * 1.5) * 0.03;
+        timObj.head.position.y = 1.6 + Math.sin(time * 2.0) * 0.015;
+        
+        // Slicing/chopping or making sushi motion
+        // Left arm moves in a chopping rhythm
+        timObj.leftArm.rotation.x = -0.2 + Math.sin(time * 4.5) * 0.25;
+        // Right arm mimics rolling or placing delicate garnishes
+        timObj.rightArm.rotation.x = -0.25 + Math.cos(time * 3.0) * 0.15;
+        timObj.rightArm.position.y = 0.9 + Math.sin(time * 3.0) * 0.04;
+      }
+
       renderer.render(scene, camera);
     };
 
@@ -611,6 +805,11 @@ export default function SushiroScene({ onBelt, onPlateConsumed, isTouchDevice }:
       sakuraMat.dispose();
       sparkleGeo.dispose();
       
+      if (timObj) {
+        scene.remove(timObj.group);
+        disposeHierarchy(timObj.group);
+      }
+
       platesRef.current.forEach((p) => {
         scene.remove(p.group);
         disposeHierarchy(p.group);

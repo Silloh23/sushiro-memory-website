@@ -56,7 +56,7 @@ export default function ReceiptPrinter({ memories, princessName }: ReceiptPrinte
     "I love you. ♡        ",
     "━━━━━━━━━━━━━━━━━━━━━",
     "     ありがとう     ",
-    " 2026.06.20 - FOREVER ",
+    " 2026.06.23 - FOREVER ",
     "━━━━━━━━━━━━━━━━━━━━━"
   ];
 
