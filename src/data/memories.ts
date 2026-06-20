@@ -1,6 +1,17 @@
 import { MemoryItem } from '../types';
 
 /**
+ * 🎵 BACKGROUND MUSIC (BGM) CONFIGURATION:
+ * ----------------------------------------
+ * To change the default background music for the entire website:
+ * 1. Put your custom MP3 file in the "public" folder (e.g. `/public/bgm.mp3`)
+ *    and set BGM_URL below to `"/bgm.mp3"`.
+ * 2. Or paste any direct high-quality audio stream link (ending in .mp3, .wav, or similar)
+ *    from the web below!
+ */
+export const DEFAULT_BGM_URL = "";
+
+/**
  * 💡 CUSTOM GRAPHICS GUIDE:
  * -------------------------
  * To replace emojis completely with your own personal drawings or photos:

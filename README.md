@@ -10,6 +10,11 @@ The application transports the viewer into a warm, cozy, vibrantly lit virtual r
 
 Our interactive design pairs nostalgic Japanese restaurant traits with romantic personal interests:
 * **Authentic Sushiro Theme**: Red and white awning banners, wooden textures, price divisions (e.g. `¥108`, `¥168`, `¥198`), and continuous revolving plate lines.
+* **🎵 Vintage Vinyl Record Player (Interactive BGM)**: A beautifully physical, retro golden wood-grained record player resting right on the table in the corner:
+  - **Dynamic Swiveling Tonearm**: Tapping the record platter physically swings the stylus arm onto the grooved vinyl, initiating smooth audio playback. Pause swings it back to its rest.
+  - **Fluid Rotational Spin**: The vinyl disc features realistic grooved reflections and spins continuously in real-time when music plays, matching the track's status.
+  - **LED Status Indicators**: Incorporates a retro glowing vacuum-tube style LED (Green for actively spinning audio, Red for paused).
+  - **Real-Time URL Insertion (⚙️)**: Click the tiny gear button on the player to paste any direct streaming MP3 audio link from the web on the fly. It instantly binds, plays, and persists across browser refreshes via custom `localStorage` sync!
 * **Animated Culinary Chef Tim**: An adorable 3D honey bear cook standing proudly at his cutting board in the background behind the conveyor belt. Tim bobs and breathes naturally while actively slicing ingredients and laying down garnishes under dedicated spotlight illumination.
 * **Custom Photos & Drawings (No Emojis Required!)**: Supports uploading personal illustrations or memorable pictures. These load asynchronously onto floating circular souvenir-pin badges right above the plates in 3D, and transition into stunning Polaroid photograph cards once clicked.
 * **Disney Whimsy**: Sparkling visual bursts, soft magenta color codes, and elegant editorial layouts.
@@ -18,7 +23,7 @@ Our interactive design pairs nostalgic Japanese restaurant traits with romantic 
 
 ---
 
-## Tech Stack
+## 🛠️ Tech Stack
 
 * **Framework**: React 19 + TypeScript + Vite
 * **3D Graphics Engine**: Three.js (Procedural geometries, custom textures, low-poly plates, and particle systems)
@@ -61,10 +66,20 @@ This project uses **Tailwind CSS v4** (`@tailwindcss/vite`), which introduces hi
 
 ---
 
-## Customizing Your Own Memories & Photos
+## Customizing Your Own Memories, Photos & BGM
 
-All memories, titles, pricing, and custom picture paths are held inside a single, easy-to-configure dataset file.
+All memories, titles, pricing, custom picture paths, and the default background soundtrack are held inside a single, easy-to-configure dataset file.
 
+### 🎵 Configuring the Default Background Music (BGM)
+To change the background music that plays by default when your visitor enters the website:
+1. Open **`src/data/memories.ts`**.
+2. Change the `DEFAULT_BGM_URL` variable to any online direct streaming audio URL, or place an MP3 file into the `/public` directory (e.g., `/public/background.mp3`) and reference it as `"/background.mp3"`:
+```typescript
+// src/data/memories.ts
+export const DEFAULT_BGM_URL = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3";
+```
+
+### Replacing Emojis with Personal Photos or Drawings
 To replace standard emojis with **personal drawings, doodles, or romantic couple photos**:
 1. Save your photos or drawings in the project's **`/public`** directory (e.g., as `/public/photos/first_date.jpg`).
 2. Open **`src/data/memories.ts`** and edit the variables, providing the absolute web path in the `imageUrl` property:

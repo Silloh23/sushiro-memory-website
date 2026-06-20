@@ -10,10 +10,3 @@ export interface MemoryItem {
   memory: string;
   locked?: boolean;
 }
-
-export interface AppState {
-  ordered: number[];      // ids ordered
-  consumed: number[];     // ids consumed
-  onBelt: number[];       // ids currently on belt (max 2)
-  queue: number[];        // ids waiting to appear
-}
