@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { DEFAULT_MEMORIES, DEFAULT_BGM_URL } from './data/memories';
-import { MemoryItem } from './types';
+import { MemoryItem, PlaylistItem } from './types';
 import LandingScreen from './components/LandingScreen';
 import SushiroScene from './components/SushiroScene';
 import MemoryRevealCard from './components/MemoryRevealCard';
@@ -26,13 +26,51 @@ export default function App() {
   // Check if touch device for optimal Raycaster tap configurations
   const [isTouchDevice, setIsTouchDevice] = useState(false);
 
-  // Background Music (BGM) playback state
-  const [bgmUrl, setBgmUrl] = useState(() => {
-    return localStorage.getItem('omoide_bgm_url') || DEFAULT_BGM_URL;
+  // Background Music (BGM) playback & playlist queue states
+  const [playlist, setPlaylist] = useState<PlaylistItem[]>(() => {
+    const saved = localStorage.getItem('omoide_bgm_playlist');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      } catch (e) {
+        console.error("Failed to parse BGM playlist", e);
+      }
+    }
+
+    // Fallback to legacy single saved BGM or direct default configured in memories.ts
+    const legacyUrl = localStorage.getItem('omoide_bgm_url');
+    const fallbackUrl = legacyUrl || DEFAULT_BGM_URL;
+
+    if (fallbackUrl && fallbackUrl.trim() !== '') {
+      const trimmed = fallbackUrl.trim();
+      return [{
+        id: 'initial_track',
+        url: trimmed,
+        title: trimmed.split('/').pop() || 'Restored Track'
+      }];
+    }
+    return [];
   });
+
+  const [currentTrackIndex, setCurrentTrackIndex] = useState<number>(() => {
+    const saved = localStorage.getItem('omoide_bgm_current_index');
+    if (saved !== null) {
+      const idx = parseInt(saved, 10);
+      return isNaN(idx) ? 0 : idx;
+    }
+    return 0;
+  });
+
+  const currentTrack = playlist[currentTrackIndex] || null;
+  const bgmUrl = currentTrack ? currentTrack.url : '';
+
   const [isBgmPlaying, setIsBgmPlaying] = useState(false);
   const [isEditingBgm, setIsEditingBgm] = useState(false);
-  const [bgmInputUrl, setBgmInputUrl] = useState(bgmUrl);
+  const [bgmInputUrl, setBgmInputUrl] = useState('');
+  const [bgmInputTitle, setBgmInputTitle] = useState('');
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Restart, recreate, or update audio element whenever BGM URL changes
@@ -50,7 +88,7 @@ export default function App() {
     }
 
     const audio = new Audio(bgmUrl);
-    audio.loop = true;
+    audio.loop = false; // Set loop to false so we can advance to the next song in the queue!
     audio.volume = 0.35; // Beautiful soft cozy background level
     audioRef.current = audio;
 
@@ -58,6 +96,20 @@ export default function App() {
     const handlePause = () => setIsBgmPlaying(false);
     audio.addEventListener('play', handlePlay);
     audio.addEventListener('pause', handlePause);
+
+    const handleEnded = () => {
+      if (playlist.length > 1) {
+        setCurrentTrackIndex((prevIndex) => {
+          const nextIndex = (prevIndex + 1) % playlist.length;
+          localStorage.setItem('omoide_bgm_current_index', String(nextIndex));
+          return nextIndex;
+        });
+      } else {
+        // Loop standard single track if it's the only one
+        audio.play().catch(() => setIsBgmPlaying(false));
+      }
+    };
+    audio.addEventListener('ended', handleEnded);
 
     // Auto-attempt playback on start
     audio.play().catch((err) => {
@@ -68,10 +120,11 @@ export default function App() {
     return () => {
       audio.removeEventListener('play', handlePlay);
       audio.removeEventListener('pause', handlePause);
+      audio.removeEventListener('ended', handleEnded);
       audio.pause();
       audioRef.current = null;
     };
-  }, [bgmUrl, started]);
+  }, [bgmUrl, started, playlist.length]);
 
   const toggleBgm = () => {
     if (!audioRef.current) return;
@@ -84,19 +137,85 @@ export default function App() {
     }
   };
 
-  const handleSaveBgm = (url: string) => {
-    const trimmed = url.trim();
-    localStorage.setItem('omoide_bgm_url', trimmed);
-    setBgmUrl(trimmed);
-    setBgmInputUrl(trimmed);
-    setIsEditingBgm(false);
+  const handleAddTrack = (url: string, title?: string) => {
+    const trimmedUrl = url.trim();
+    if (!trimmedUrl) return;
+
+    const trackTitle = title?.trim() || trimmedUrl.split('/').pop() || 'Untitled Track';
+    const newTrack: PlaylistItem = {
+      id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+      url: trimmedUrl,
+      title: trackTitle,
+    };
+
+    const updatedPlaylist = [...playlist, newTrack];
+    setPlaylist(updatedPlaylist);
+    localStorage.setItem('omoide_bgm_playlist', JSON.stringify(updatedPlaylist));
+
+    setBgmInputUrl('');
+    setBgmInputTitle('');
+
+    // If playlist was previously empty, load this track immediately
+    if (playlist.length === 0) {
+      setCurrentTrackIndex(0);
+      localStorage.setItem('omoide_bgm_current_index', '0');
+    }
+  };
+
+  const handlePlayIndex = (index: number) => {
+    if (index < 0 || index >= playlist.length) return;
+    setCurrentTrackIndex(index);
+    localStorage.setItem('omoide_bgm_current_index', String(index));
+  };
+
+  const handleRemoveTrack = (id: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const indexToRemove = playlist.findIndex(t => t.id === id);
+    if (indexToRemove === -1) return;
+
+    const updatedPlaylist = playlist.filter(t => t.id !== id);
+    setPlaylist(updatedPlaylist);
+    localStorage.setItem('omoide_bgm_playlist', JSON.stringify(updatedPlaylist));
+
+    if (updatedPlaylist.length === 0) {
+      setCurrentTrackIndex(0);
+      localStorage.setItem('omoide_bgm_current_index', '0');
+    } else if (indexToRemove === currentTrackIndex) {
+      const nextIndex = indexToRemove % updatedPlaylist.length;
+      setCurrentTrackIndex(nextIndex);
+      localStorage.setItem('omoide_bgm_current_index', String(nextIndex));
+    } else if (indexToRemove < currentTrackIndex) {
+      const nextIndex = currentTrackIndex - 1;
+      setCurrentTrackIndex(nextIndex);
+      localStorage.setItem('omoide_bgm_current_index', String(nextIndex));
+    }
+  };
+
+  const handleNextTrack = () => {
+    if (playlist.length <= 1) return;
+    setCurrentTrackIndex((prev) => {
+      const next = (prev + 1) % playlist.length;
+      localStorage.setItem('omoide_bgm_current_index', String(next));
+      return next;
+    });
+  };
+
+  const handlePrevTrack = () => {
+    if (playlist.length <= 1) return;
+    setCurrentTrackIndex((prev) => {
+      const prevIdx = (prev - 1 + playlist.length) % playlist.length;
+      localStorage.setItem('omoide_bgm_current_index', String(prevIdx));
+      return prevIdx;
+    });
   };
 
   const handleResetBgm = () => {
-    localStorage.removeItem('omoide_bgm_url');
-    setBgmUrl(DEFAULT_BGM_URL);
-    setBgmInputUrl(DEFAULT_BGM_URL);
-    setIsEditingBgm(false);
+    localStorage.removeItem('omoide_bgm_playlist');
+    localStorage.removeItem('omoide_bgm_current_index');
+    setPlaylist([]);
+    setCurrentTrackIndex(0);
+    setBgmInputUrl('');
+    setBgmInputTitle('');
   };
 
   useEffect(() => {
@@ -299,39 +418,128 @@ export default function App() {
 
             {/* Floating popover/tooltip overlay to customize Spotify/audio URL when settings is clicked */}
             {isEditingBgm && (
-              <div className="absolute bottom-12 right-0 w-[230px] bg-white border border-[#F7C5C5]/60 rounded-2xl shadow-xl p-3 z-30 flex flex-col gap-2 animate-fade-in text-left">
-                <p className="text-[9px] font-extrabold text-[#2C2C2C] leading-tight flex items-center gap-1 select-none">
-                  <span>🎵</span> PLAY YOUR OWN BGM
-                </p>
-                <p className="text-[8px] text-gray-500 leading-normal">
-                  Paste the URL of an MP3/streaming audio file to change the turntable playlist sound:
-                </p>
+              <div className="absolute bottom-12 right-0 w-[290px] bg-white border border-[#F7C5C5]/60 rounded-2xl shadow-xl p-4.5 z-30 flex flex-col gap-3 animate-fade-in text-left">
+                <div>
+                  <p className="text-[10px] font-extrabold text-[#2C2C2C] leading-tight flex items-center justify-between select-none">
+                    <span className="flex items-center gap-1">PLAY YOUR OWN BGM</span>
+                    <span className="text-[8px] bg-amber-50 text-amber-800 px-1.5 py-0.5 rounded-md border border-amber-200">
+                      {playlist.length} track{playlist.length === 1 ? '' : 's'}
+                    </span>
+                  </p>
+                  <p className="text-[8px] text-gray-400 mt-1 select-none">
+                    Queue multiple custom live MP3 streams/tracks below:
+                  </p>
+                </div>
                 
-                <div className="flex gap-1.5">
-                  <input 
-                    type="text"
-                    value={bgmInputUrl}
-                    onChange={(e) => setBgmInputUrl(e.target.value)}
-                    placeholder="https://example.com/song.mp3"
-                    className="flex-1 text-[10px] bg-amber-50/50 border border-[#F7C5C5] rounded-md px-2 py-1 outline-none focus:border-[#D0021B] text-gray-800"
-                  />
-                  <button 
-                    onClick={() => handleSaveBgm(bgmInputUrl)}
-                    className="bg-[#D0021B] hover:bg-[#b00216] text-white text-[9px] font-bold px-2.5 py-1 rounded-md cursor-pointer transition-colors shrink-0"
-                  >
-                    Load
-                  </button>
+                {/* Inputs for adding new track */}
+                <div className="flex flex-col gap-1.5 bg-amber-50/40 border border-amber-100 p-2.5 rounded-xl">
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[7.5px] font-bold text-gray-500 uppercase tracking-wider">Song Name (Optional)</label>
+                    <input 
+                      type="text"
+                      className="text-[10px] bg-white border border-[#F7C5C5]/60 rounded-md px-2 py-1 outline-none focus:border-[#D0021B] text-gray-800"
+                      placeholder="e.g. Lofi Dream"
+                      value={bgmInputTitle}
+                      onChange={(e) => setBgmInputTitle(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[7.5px] font-bold text-gray-500 uppercase tracking-wider">Direct MP3 Link</label>
+                    <div className="flex gap-1.5">
+                      <input 
+                        type="text"
+                        value={bgmInputUrl}
+                        onChange={(e) => setBgmInputUrl(e.target.value)}
+                        placeholder="https://example.com/sound.mp3"
+                        className="flex-1 text-[10px] bg-white border border-[#F7C5C5]/60 rounded-md px-2 py-1 outline-none focus:border-[#D0021B] text-gray-800"
+                      />
+                      <button 
+                        onClick={() => handleAddTrack(bgmInputUrl, bgmInputTitle)}
+                        className="bg-[#D0021B] hover:bg-[#b00216] text-white text-[9px] font-bold px-2.5 py-1 rounded-md cursor-pointer transition-colors shrink-0"
+                      >
+                        + Add
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="flex items-center justify-between border-t border-[#F7C5C5]/30 pt-1.5 mt-0.5 pointer-events-auto">
-                  <span className="text-[8px] text-gray-400 truncate max-w-[120px] font-mono select-all">
-                    {bgmUrl.split('/').pop() || 'Loading song...'}
-                  </span>
+                {/* Playlist Scrollable Queue */}
+                <div className="flex flex-col gap-1">
+                  <p className="text-[8px] font-bold text-gray-500 uppercase tracking-wider select-none">Current Queue</p>
+                  <div className="max-h-[110px] overflow-y-auto pr-1 flex flex-col gap-1 list-none">
+                    {playlist.length === 0 ? (
+                      <div className="text-center py-4 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                        <p className="text-[8.5px] text-gray-400">Your turntable queue is empty</p>
+                        <p className="text-[7.5px] text-gray-400 opacity-80 mt-0.5">Paste links above to build a playlist!</p>
+                      </div>
+                    ) : (
+                      playlist.map((track, idx) => {
+                        const isActive = idx === currentTrackIndex;
+                        return (
+                          <div 
+                            key={track.id}
+                            onClick={() => handlePlayIndex(idx)}
+                            className={`flex items-center justify-between p-1.5 rounded-lg border text-[9px] cursor-pointer transition-all select-none ${
+                              isActive 
+                                ? 'bg-[#FFF0F0] border-[#D0021B]/30 text-[#D0021B] font-bold' 
+                                : 'bg-gray-50 hover:bg-gray-100 border-gray-250/20 text-gray-700'
+                            }`}
+                          >
+                            <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                              <span className="shrink-0 text-[8px] font-mono text-gray-400 w-3 text-center">
+                                {isActive ? '' : idx + 1}
+                              </span>
+                              <span className="truncate pr-1">{track.title}</span>
+                            </div>
+                            <button 
+                              onClick={(e) => handleRemoveTrack(track.id, e)}
+                              className="text-gray-400 hover:text-[#D0021B] p-0.5 hover:bg-white rounded-md shrink-0 transition-colors"
+                              title="Remove from queue"
+                            >
+                              ⌫
+                            </button>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+
+                {/* Direct Turntable Active Status & Controls */}
+                <div className="flex items-center justify-between border-t border-[#F7C5C5]/30 pt-2 mt-1 pointer-events-auto">
+                  {/* Music controls */}
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={handlePrevTrack}
+                      className="text-[12px] p-0.5 cursor-pointer hover:scale-110 active:scale-95 transition-transform disabled:opacity-30 disabled:pointer-events-none"
+                      disabled={playlist.length <= 1}
+                      title="Previous Song"
+                    >
+                      ⏮
+                    </button>
+                    <button
+                      onClick={toggleBgm}
+                      className="text-[13px] p-0.5 cursor-pointer hover:scale-110 active:scale-95 transition-transform disabled:opacity-30 disabled:pointer-events-none"
+                      disabled={playlist.length === 0}
+                      title={isBgmPlaying ? "Pause Music" : "Play Music"}
+                    >
+                      {isBgmPlaying ? 'II' : '▶'}
+                    </button>
+                    <button
+                      onClick={handleNextTrack}
+                      className="text-[12px] p-0.5 cursor-pointer hover:scale-110 active:scale-95 transition-transform disabled:opacity-30 disabled:pointer-events-none"
+                      disabled={playlist.length <= 1}
+                      title="Next Song"
+                    >
+                      ⏭
+                    </button>
+                  </div>
+
                   <button 
                     onClick={handleResetBgm}
                     className="text-[9px] text-[#D0021B] hover:underline font-bold select-none cursor-pointer"
                   >
-                    Reset
+                    Clear Queue
                   </button>
                 </div>
               </div>
@@ -485,7 +693,7 @@ export default function App() {
           >
             <h5 className="font-display font-bold text-sm mt-1">Secret Menu is Brewing!</h5>
             <p className="font-sans text-xs text-gray-300 mt-1 leading-relaxed">
-              Order all other {DEFAULT_MEMORIES.length - 1} magical memory plates to reveal the final secret dessert roll!
+              Feed Chef Tim all other {DEFAULT_MEMORIES.length - 1} magical memory plates to reveal the final secret dessert roll!
             </p>
           </motion.div>
         )}

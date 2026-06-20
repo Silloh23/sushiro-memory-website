@@ -10,3 +10,9 @@ export interface MemoryItem {
   memory: string;
   locked?: boolean;
 }
+
+export interface PlaylistItem {
+  id: string;
+  url: string;
+  title: string;
+}

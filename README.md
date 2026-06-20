@@ -14,7 +14,9 @@ Our interactive design pairs nostalgic Japanese restaurant traits with romantic 
   - **Dynamic Swiveling Tonearm**: Tapping the record platter physically swings the stylus arm onto the grooved vinyl, initiating smooth audio playback. Pause swings it back to its rest.
   - **Fluid Rotational Spin**: The vinyl disc features realistic grooved reflections and spins continuously in real-time when music plays, matching the track's status.
   - **LED Status Indicators**: Incorporates a retro glowing vacuum-tube style LED (Green for actively spinning audio, Red for paused).
-  - **Real-Time URL Insertion (⚙️)**: Click the tiny gear button on the player to paste any direct streaming MP3 audio link from the web on the fly. It instantly binds, plays, and persists across browser refreshes via custom `localStorage` sync!
+   - **Multi-Track Playlists & Queue (⚙️)**: Click the tiny gear button on the player to open the Queue manager. You can label and add multiple direct streaming MP3 links or local public-folder MP3 paths.
+   - **Playback Controller**: Control playback with standard playback buttons (⏮, Play/Pause, ⏭) and easily remove songs or switch tracks directly inside the scrollable visual queue. Tracks will automatically advance to the next queued item at completion!
+  - **Persistent Memory**: The entire custom playlist and the active track position are automatically persisted across browser refreshes using `localStorage` sync.
 * **Animated Culinary Chef Tim**: An adorable 3D honey bear cook standing proudly at his cutting board in the background behind the conveyor belt. Tim bobs and breathes naturally while actively slicing ingredients and laying down garnishes under dedicated spotlight illumination.
 * **Custom Photos & Drawings (No Emojis Required!)**: Supports uploading personal illustrations or memorable pictures. These load asynchronously onto floating circular souvenir-pin badges right above the plates in 3D, and transition into stunning Polaroid photograph cards once clicked.
 * **Disney Whimsy**: Sparkling visual bursts, soft magenta color codes, and elegant editorial layouts.
